@@ -2,62 +2,128 @@ const inquirer = require('inquirer'); // import inquirer for asking questions
 const fs = require('fs'); // import file system for writing files
 
 // load shape modules from the 'lib' directory for creating shapes
-const Circle = require('./lib/circle.js');
-const Square = require('./lib/square.js');
-const Triangle = require('./lib/triangle.js');
+const shapeChoices = require('./lib/shapeChoices.js');
+// color keywords array
+const colorKeywords = require('./lib/colorChoices.js');
 
 // questions that will be asked to the user
 const questions = [
     {
-        type: 'input', 
-        name: 'text', 
-        message: 'What text would you like on your logo? Enter up to three characters:',
+        type: 'input', // type of input
+        name: 'title', // key for the answer 
+        message: 'What is the title for your SVG file?:',
+         validate: (answer) => {
+            if (!answer.trim()) {
+                return "\n Title cannot be empty. Please enter a valid title.";
+            }
+            return true;
+        }
     },
     {
-        type: 'input',
-        name: 'textColor',
-        message: 'What color would you like the text to be? (keyword or hexadecimal):',
+        type: 'input', 
+        name: 'text',  
+        message: 'What text would you like on your logo? Enter up to three characters:',
+        validate: (answer) => {
+            if (answer.length > 3) {
+                return "\n Text must be three characters or less! Please try again";
+            }
+            return true;
+        }
     },
     {
         type: 'list', // provides list of options for the user to choose from 
-        name: 'shape',
-        message: 'What shape would you like your logo to be?',
-        choices: ['circle', 'triangle', 'square'], // shape options
+        name: 'textColorChoice',
+        message: 'What color would you like the text to be? Choose a color format:',
+        choices: ['color keyword', 'hexadecimal'] // list options
+    },
+    // color keyword (validate with colorKeywords array)
+    {
+        type: "input",
+        name: "textColor",
+        message: "Enter the text color keyword:",
+        when: (answers) => answers.textColorChoice === 'color keyword',
+        validate: (answer) => {
+            let answerLowercase = answer.toLowerCase();
+            if (colorKeywords.includes(answerLowercase)) {
+                return true;
+            }
+            return "\n Please enter a valid color keyword";
+        }
+    },
+    // hexadecimal (validate hexadecimal with RegEx pattern)
+    {
+        type: "input",
+        name: "textColor",
+        message: "Enter the text hexadecimal number (#CCCCCC):",
+        when: (answers) => answers.textColorChoice === 'hexadecimal',
+        validate: (answer) => {
+            const hexRegEx = /^#[A-Fa-f0-9]{6}$/;
+            if (!answer.match(hexRegEx)) {
+                return "\n Please enter a valid hexadecimal";
+            }
+            return true;
+        }
     },
     {
-        type: 'input',
-        name: 'shapeColor',
-        message: 'What color would you like the shape to be? (keyword or hexadecimal):',
+        type: 'list',
+        name: 'shape',
+        message: 'What shape would you like your logo to be?',
+        choices: ['circle', 'triangle', 'square'],
+    },
+    {
+        type: 'list',
+        name: 'shapeColorChoice',
+        message: 'What color would you like the shape to be? Choose a color format:',
+        choices: ['color keyword', 'hexadecimal']
+    },
+    // color keywords w/validation
+    {
+        type: "input",
+        name: "shapeColor",
+        message: "Enter the shape color keyword:",
+        when: (answers) => answers.shapeColorChoice === 'color keyword',
+        validate: (answer) => {
+            let answerLowercase = answer.toLowerCase();
+            if (colorKeywords.includes(answerLowercase)) {
+                return true;
+            }
+            return "\n Please enter a valid color keyword";
+        }
+    },
+    // hexadecimal option w/validation
+    {
+        type: "input",
+        name: "shapeColor",
+        message: "Enter the shape hexadecimal number (#CCCCCC):",
+        when: (answers) => answers.shapeColorChoice === 'hexadecimal',
+        validate: (answer) => {
+            const hexRegEx = /^#[A-Fa-f0-9]{6}$/;
+            if (!answer.match(hexRegEx)) {
+                return "\n Please enter a valid hexadecimal";
+            }
+            return true;
+        }
     },
 ];
 
-// prompt the user with the defined questions
-inquirer.prompt(questions).then(answers => {
-    // extract user inputs from answers
-    const { text, textColor, shape, shapeColor } = answers;
-    let shapeInstance;
-    // create the selected shape
-    switch (shape) {
-        case 'circle':
-            shapeInstance = new Circle();
-            break;
-        case 'triangle':
-            shapeInstance = new Triangle();
-            break;
-        case 'square':
-            shapeInstance = new Square();
-            break;
-    }
-    // set the color of the shape
-    shapeInstance.setColor(shapeColor);
-    // create the SVG content using template literals
-     const svgContent = `
-    <svg width="300" height="200" xmlns="http://www.w3.org/2000/svg">
-        ${shapeInstance.render()}
-        <text x="150" y="125" font-size="60" text-anchor="middle" fill="${textColor}">${text}</text>
-    </svg>`;
-    // write the generated SVG content to a file named 'logo.svg'
-    fs.writeFileSync('logo.svg', svgContent.trim());
-    // log a message to the console indicating the file has been created
-    console.log('Generated logo.svg');
-});
+// function to create new SVG file using inquirer response and file system
+function createLogo(title, response) {
+    const svg = shapeChoices(response); // generate SVG content based on user response
+    const fileName = `./generated-logos/${title}.svg`;
+    fs.writeFile(fileName, svg, () => console.log(`Generated ${fileName}`));  // write the SVG content to the file
+}
+
+// function to initialize, ask questions then createLogo using responses, and catch any errors
+function init() {
+    inquirer
+        .prompt(questions) // ask user the questions
+        .then((response) => {
+            const { title } = response; // extract title from response
+            createLogo(title, response); // create SVG file with the given title and response
+        })
+        .catch(err => {
+            console.log(err); // log errors
+        });
+}
+
+init(); // initialize 
