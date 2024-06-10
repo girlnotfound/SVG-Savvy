@@ -10,7 +10,7 @@ SVG Savvy is a command-line application that allows users to create custom SVG l
 
 - Generates an SVG file with the specified name.
 
-- Outputs the message "Generated .svg!" upon successful file creation.
+- Outputs the message "`Generated ${fileName}!`" upon successful file creation.
 
 ## Installation
 
@@ -20,13 +20,13 @@ To install SVG Savvy:
 
 - Navigate to the project directory
 
-- Open the terminal and run the command: npm install
+- Open the terminal and run the command: `npm install`
 
 ## Usage
 
-To use SVG Savvy use the terminal to run the command: node index.js.
+To use SVG Savvy use the terminal to run the command: `node index.js`
 
-- You will be prompted to enter the name of the SVG file to be created. The file will be saved with the provided name and a .svg extension.
+- You will be prompted to enter the name of the SVG file to be created. The file will be saved to the folder: generated-logos with the provided name and a .svg extension.
 
 - You will be prompted to enter text for the logo - you can enter up to three characters.
 
@@ -36,7 +36,7 @@ To use SVG Savvy use the terminal to run the command: node index.js.
 
 - You will be prompted to enter the color for the shape - you can enter a color keyword or a hexadecimal number.
 
-After entering all the prompts, an SVG file with the specified name will be created and the command line will output "Generated .svg file!" The logo will be displayed as a 300x200 pixel image.
+After entering all the prompts, an SVG file with the specified name will be created and the command line will output "`Generated ${fileName}!`" The logo will be displayed as a 300x200 pixel image.
 
 [Link to Walk Through Video](https://app.screencastify.com/v3/watch/icyfAt44lbYYSCy6Cz1D)
 
@@ -54,4 +54,4 @@ This project was made possible with the help of:
 
 ## Tests
 
-To run the tests for SVG Savvy run the following command in the command line: npm test
+To run the tests for SVG Savvy run the following command in the command line: `npm test`
