@@ -110,7 +110,7 @@ const questions = [
 function createLogo(title, response) {
     const svg = shapeChoices(response); // generate SVG content based on user response
     const fileName = `./generated-logos/${title}.svg`;
-    fs.writeFile(fileName, svg, () => console.log(`Generated ${fileName}`));  // write the SVG content to the file
+    fs.writeFile(fileName, svg, () => console.log(`Generated ${fileName}!`));  // write the SVG content to the file
 }
 
 // function to initialize, ask questions then createLogo using responses, and catch any errors
